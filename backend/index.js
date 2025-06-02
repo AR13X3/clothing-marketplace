@@ -33,7 +33,7 @@ app.post('/api/ai-search', async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Update to a valid model name like "gemini-1.5-flash"
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Update to a valid model name like "gemini-1.5-flash"
 
     const prompt = `
       Analyze the following user query for a clothing store: "${query}".
