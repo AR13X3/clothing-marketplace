@@ -17,12 +17,10 @@ app.use(express.json());
 
 // --- API ENDPOINTS ---
 
-// Get all products
 app.get('/api/products', (req, res) => {
   res.json(products);
 });
 
-// AI search endpoint
 app.post('/api/ai-search', async (req, res) => {
   const { query } = req.body;
 
@@ -31,7 +29,7 @@ app.post('/api/ai-search', async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using a valid, recent model
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
       Analyze the following user query for a clothing store: "${query}".
@@ -44,17 +42,19 @@ app.post('/api/ai-search', async (req, res) => {
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    // THIS IS THE FIX: Using 'let' instead of 'const'
-    let text = response.text();
+    const text = response.text();
 
-    // This checks for markdown formatting and removes it.
-    if (text.startsWith("```json")) {
-      text = text.slice(7, -3).trim();
+    // --- FINAL, ROBUST JSON CLEANING ---
+    // This regular expression finds the first valid JSON object in the response text.
+    const jsonMatch = text.match(/{[\s\S]*}/);
+    if (!jsonMatch) {
+      throw new Error("No valid JSON object found in AI response.");
     }
+    const jsonString = jsonMatch[0];
+    // --- End of final fix ---
     
-    const searchCriteria = JSON.parse(text);
+    const searchCriteria = JSON.parse(jsonString);
 
-    // Filter products based on AI response
     let filteredProducts = products;
     if (searchCriteria.category) {
       filteredProducts = filteredProducts.filter(
