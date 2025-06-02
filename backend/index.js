@@ -8,8 +8,6 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 // --- INITIALIZATION ---
 const app = express();
 const port = 5000;
-
-// Initialize the AI with the API Key from your .env file
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const products = JSON.parse(fs.readFileSync(path.join(__dirname, 'products.json')));
 
@@ -33,7 +31,7 @@ app.post('/api/ai-search', async (req, res) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Update to a valid model name like "gemini-1.5-flash"
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Using a valid, recent model
 
     const prompt = `
       Analyze the following user query for a clothing store: "${query}".
@@ -44,27 +42,17 @@ app.post('/api/ai-search', async (req, res) => {
       Example for "a warm stylish jacket": {"category":"Jackets","attributes":["warm","stylish"]}.
     `;
 
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }]
-    });
-
+    const result = await model.generateContent(prompt);
     const response = await result.response;
+    // THIS IS THE FIX: Using 'let' instead of 'const'
     let text = response.text();
 
-        // --- NEW: Clean the AI response ---
     // This checks for markdown formatting and removes it.
     if (text.startsWith("```json")) {
       text = text.slice(7, -3).trim();
     }
-    // --- End of new code ---
-
-    let searchCriteria;
-    try {
-      searchCriteria = JSON.parse(text);
-    } catch (err) {
-      console.error('Failed to parse AI response as JSON:', text);
-      return res.status(500).json({ error: 'AI response could not be parsed' });
-    }
+    
+    const searchCriteria = JSON.parse(text);
 
     // Filter products based on AI response
     let filteredProducts = products;
@@ -84,7 +72,7 @@ app.post('/api/ai-search', async (req, res) => {
     res.json(filteredProducts);
   } catch (error) {
     console.error('AI search error:', error);
-    res.status(500).json({ error: 'Failed to perform AI search' });
+    res.status(500).json({ error: 'Failed to perform AI search', details: error.message });
   }
 });
 
