@@ -1,39 +1,34 @@
-require('dotenv').config(); // Loads environment variables from .env
+require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-const { GoogleGenerativeAI } = require('@google/generative-ai'); // Import Google AI SDK [cite: 33]
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// --- INITIALIZATION ---
 const app = express();
 const port = 5000;
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Initialize with API Key
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const products = JSON.parse(fs.readFileSync(path.join(__dirname, 'products.json')));
 
-// --- MIDDLEWARE ---
 app.use(cors());
-app.use(express.json()); // Middleware to parse incoming JSON requests
+app.use(express.json());
 
-// --- API ENDPOINTS ---
-
-// Endpoint to get all products
 app.get('/api/products', (req, res) => {
   res.json(products);
 });
 
-// New AI Search Endpoint [cite: 34, 36]
+// This endpoint implements the AI search feature [cite: 25]
 app.post('/api/ai-search', async (req, res) => {
-  const { query } = req.body; // Get search query from the request [cite: 34]
+  const { query } = req.body;
 
   if (!query) {
     return res.status(400).json({ error: 'Search query is required' });
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    // Using the user-specified Gemini model
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    // This prompt instructs Gemini on how to behave and what to return [cite: 35]
     const prompt = `
       Analyze the following user query for a clothing store: "${query}".
       Extract the most likely product category and any specific attributes.
@@ -47,10 +42,8 @@ app.post('/api/ai-search', async (req, res) => {
     const response = await result.response;
     const text = response.text();
 
-    // Parse the structured JSON response from Gemini [cite: 29]
     const searchCriteria = JSON.parse(text);
 
-    // Filter products based on the AI's response [cite: 36]
     let filteredProducts = products;
 
     if (searchCriteria.category) {
@@ -74,7 +67,6 @@ app.post('/api/ai-search', async (req, res) => {
   }
 });
 
-// --- START SERVER ---
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
