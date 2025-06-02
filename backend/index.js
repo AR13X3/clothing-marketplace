@@ -51,6 +51,13 @@ app.post('/api/ai-search', async (req, res) => {
     const response = await result.response;
     const text = response.text();
 
+        // --- NEW: Clean the AI response ---
+    // This checks for markdown formatting and removes it.
+    if (text.startsWith("```json")) {
+      text = text.slice(7, -3).trim();
+    }
+    // --- End of new code ---
+
     let searchCriteria;
     try {
       searchCriteria = JSON.parse(text);
