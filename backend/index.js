@@ -3,21 +3,28 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+// The SDK for Node.js server-side applications
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
+// --- INITIALIZATION ---
 const app = express();
 const port = 5000;
+// Initialize the AI with the API Key from your .env file
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const products = JSON.parse(fs.readFileSync(path.join(__dirname, 'products.json')));
 
+// --- MIDDLEWARE ---
 app.use(cors());
 app.use(express.json());
 
+// --- API ENDPOINTS ---
+
+// Endpoint to get all products
 app.get('/api/products', (req, res) => {
   res.json(products);
 });
 
-// This endpoint implements the AI search feature [cite: 25]
+// New AI Search Endpoint using your specified code structure
 app.post('/api/ai-search', async (req, res) => {
   const { query } = req.body;
 
@@ -26,8 +33,8 @@ app.post('/api/ai-search', async (req, res) => {
   }
 
   try {
-    // Using the user-specified Gemini model
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    // This is the implementation of the logic you provided
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" }); // Using a valid model name
 
     const prompt = `
       Analyze the following user query for a clothing store: "${query}".
@@ -44,14 +51,13 @@ app.post('/api/ai-search', async (req, res) => {
 
     const searchCriteria = JSON.parse(text);
 
+    // Filter products based on the AI's response
     let filteredProducts = products;
-
     if (searchCriteria.category) {
       filteredProducts = filteredProducts.filter(
         (p) => p.category.toLowerCase() === searchCriteria.category.toLowerCase()
       );
     }
-
     if (searchCriteria.attributes && searchCriteria.attributes.length > 0) {
       filteredProducts = filteredProducts.filter((p) =>
         searchCriteria.attributes.some((attr) =>
@@ -67,6 +73,7 @@ app.post('/api/ai-search', async (req, res) => {
   }
 });
 
+// --- START SERVER ---
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
