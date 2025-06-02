@@ -3,12 +3,12 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
-// The SDK for Node.js server-side applications
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // --- INITIALIZATION ---
 const app = express();
 const port = 5000;
+
 // Initialize the AI with the API Key from your .env file
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const products = JSON.parse(fs.readFileSync(path.join(__dirname, 'products.json')));
@@ -19,12 +19,12 @@ app.use(express.json());
 
 // --- API ENDPOINTS ---
 
-// Endpoint to get all products
+// Get all products
 app.get('/api/products', (req, res) => {
   res.json(products);
 });
 
-// New AI Search Endpoint using your specified code structure
+// AI search endpoint
 app.post('/api/ai-search', async (req, res) => {
   const { query } = req.body;
 
@@ -33,8 +33,7 @@ app.post('/api/ai-search', async (req, res) => {
   }
 
   try {
-    // This is the implementation of the logic you provided
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // Using a valid model name
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Update to a valid model name like "gemini-1.5-flash"
 
     const prompt = `
       Analyze the following user query for a clothing store: "${query}".
@@ -45,20 +44,29 @@ app.post('/api/ai-search', async (req, res) => {
       Example for "a warm stylish jacket": {"category":"Jackets","attributes":["warm","stylish"]}.
     `;
 
-    const result = await model.generateContent(prompt);
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }]
+    });
+
     const response = await result.response;
     const text = response.text();
 
-    const searchCriteria = JSON.parse(text);
+    let searchCriteria;
+    try {
+      searchCriteria = JSON.parse(text);
+    } catch (err) {
+      console.error('Failed to parse AI response as JSON:', text);
+      return res.status(500).json({ error: 'AI response could not be parsed' });
+    }
 
-    // Filter products based on the AI's response
+    // Filter products based on AI response
     let filteredProducts = products;
     if (searchCriteria.category) {
       filteredProducts = filteredProducts.filter(
         (p) => p.category.toLowerCase() === searchCriteria.category.toLowerCase()
       );
     }
-    if (searchCriteria.attributes && searchCriteria.attributes.length > 0) {
+    if (Array.isArray(searchCriteria.attributes) && searchCriteria.attributes.length > 0) {
       filteredProducts = filteredProducts.filter((p) =>
         searchCriteria.attributes.some((attr) =>
           p.name.toLowerCase().includes(attr.toLowerCase())
