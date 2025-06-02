@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Classic Cotton T-Shirt",
+    "category": "Tops",
+    "price": 25.00,
+    "imageUrl": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=2564&auto=format&fit=crop"
+  },
+  {
+    "id": 2,
+    "name": "Slim Fit Denim Jeans",
+    "category": "Bottoms",
+    "price": 79.99,
+    "imageUrl": "https://images.unsplash.com/photo-1602293589930-45aad59ba3ab?q=80&w=2574&auto=format&fit=crop"
+  },
+  {
+    "id": 3,
+    "name": "Lightweight Windbreaker Jacket",
+    "category": "Jackets",
+    "price": 120.50,
+    "imageUrl": "https://images.unsplash.com/photo-1591047139829-d919b5ca4031?q=80&w=2574&auto=format&fit=crop"
+  }
+]
