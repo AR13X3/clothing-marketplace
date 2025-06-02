@@ -34,7 +34,7 @@ app.post('/api/ai-search', async (req, res) => {
 
   try {
     // This is the implementation of the logic you provided
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" }); // Using a valid model name
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // Using a valid model name
 
     const prompt = `
       Analyze the following user query for a clothing store: "${query}".
