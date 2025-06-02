@@ -19,5 +19,40 @@
     "category": "Jackets",
     "price": 120.50,
     "imageUrl": "https://images.unsplash.com/photo-1591047139829-d919b5ca4031?q=80&w=2574&auto=format&fit=crop"
+  },
+  {
+    "id": 4,
+    "name": "Summer Floral Dress",
+    "category": "Tops",
+    "price": 85.00,
+    "imageUrl": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=2574&auto=format&fit=crop"
+  },
+  {
+    "id": 5,
+    "name": "Comfort Fit Cargo Shorts",
+    "category": "Bottoms",
+    "price": 45.50,
+    "imageUrl": "https://images.unsplash.com/photo-1603241449552-614751f25164?q=80&w=2574&auto=format&fit=crop"
+  },
+  {
+    "id": 6,
+    "name": "Cozy Fleece Hoodie",
+    "category": "Jackets",
+    "price": 95.00,
+    "imageUrl": "https://images.unsplash.com/photo-1556821844-46c5354b0242?q=80&w=2574&auto=format&fit=crop"
+  },
+  {
+    "id": 7,
+    "name": "Wool Knit Beanie",
+    "category": "Tops",
+    "price": 22.00,
+    "imageUrl": "https://images.unsplash.com/photo-1575428652377-a3d80e281e6e?q=80&w=2574&auto=format&fit=crop"
+  },
+  {
+    "id": 8,
+    "name": "Crewneck Knit Sweater",
+    "category": "Tops",
+    "price": 110.00,
+    "imageUrl": "https://images.unsplash.com/photo-1616763694669-143a4e9bd355?q=80&w=2574&auto=format&fit=crop"
   }
 ]
