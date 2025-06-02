@@ -49,7 +49,7 @@ app.post('/api/ai-search', async (req, res) => {
     });
 
     const response = await result.response;
-    const text = response.text();
+    let text = response.text();
 
         // --- NEW: Clean the AI response ---
     // This checks for markdown formatting and removes it.
